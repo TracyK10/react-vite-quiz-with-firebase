@@ -3,10 +3,10 @@
 function Question({ question }) {
   return (
     <div>
-      <h2>{question.question}</h2>
+      <h2 dangerouslySetInnerHTML={{__html: question.question}}></h2>
       {
         question.options.map((option) => (
-          <button key={option}>{option}</button>
+          <button dangerouslySetInnerHTML={{__html: option}} key={option}></button>
         ))
       }
     </div>
