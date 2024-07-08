@@ -84,3 +84,59 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* CORRECT/INCORRECT CHOICE */
+.correct {
+  background-color: rgba(18, 59, 18, 0.7);
+  color: white;
+}
+
+.incorrect {
+  background-color: rgba(167, 38, 38, 0.7);
+  color: white;
+}
+
+/* HUD */
+#progress-bar {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px auto;
+}
+
+#progressBarFull {
+  height: 20px;
+  background-color: #f1356d;
+  transition: width 0.3s;
+}
+
+.hud-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.hud-prefix {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #f1356d;
+  margin: 0;
+}
+
+.hud-main-text {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+#hud{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 10px;
+}
