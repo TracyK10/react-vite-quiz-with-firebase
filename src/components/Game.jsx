@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import Question from "./Question";
 import { loadQuestions } from "../helpers/QuestionsHelper";
 import "../index.css";
@@ -13,40 +14,58 @@ function Game() {
   const [questionNumber, setQuestionNumber] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const questions = await loadQuestions();
-        console.log(questions);
-        setQuestions(questions);
-        changeQuestion(questions);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  const navigate = useNavigate(); // Use useNavigate for navigation
 
-    fetchQuestions();
+  // Load questions when the component mounts
+  useEffect(() => {
+    loadQuestions()
+      .then((questions) => {
+        setQuestions(questions);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }, []);
 
-  function changeQuestion(questionsArray, bonus = 0) {
-    if (questionsArray.length === 0) {
-      return setGameOver(true) && setScore(prevScore => prevScore + bonus);
+  // Change the question when questions are loaded or currentQuestion changes
+  useEffect(() => {
+    if (!currentQuestion && questions.length) {
+      changeQuestion(questions);
     }
-    const randomQuestionIndex = Math.floor(
-      Math.random() * questionsArray.length
-    );
-    const currentQuestion = questionsArray[randomQuestionIndex];
-    const remainingQuestions = [...questionsArray];
-    remainingQuestions.splice(randomQuestionIndex, 1);
-    setQuestions(remainingQuestions);
-    setCurrentQuestion(currentQuestion);
-    setLoading(false);
-    setScore((prevScore) => prevScore + bonus);
-    setQuestionNumber((prevQuestionNumber) => prevQuestionNumber + 1);
-  }
+  }, [currentQuestion, questions]);
 
+  // Function to change the current question and update the score
+  const changeQuestion = useCallback(
+    (questionsArray = questions, bonus = 0) => {
+      if (questionsArray.length === 0) {
+        setScore((prevScore) => prevScore + bonus);
+        setGameOver(true);
+        return;
+      }
+      const randomQuestionIndex = Math.floor(
+        Math.random() * questionsArray.length
+      );
+
+      const currentQuestion = questionsArray[randomQuestionIndex];
+      const remainingQuestions = [...questionsArray];
+      remainingQuestions.splice(randomQuestionIndex, 1);
+      setQuestions(remainingQuestions);
+      setCurrentQuestion(currentQuestion);
+      setLoading(false);
+      setScore((prevScore) => prevScore + bonus);
+      setQuestionNumber((prevQuestionNumber) => prevQuestionNumber + 1);
+    },
+    [score, questionNumber, questions]
+  );
+
+  // Function to handle question change and update score
   function handleQuestionChange(bonus = 0) {
     changeQuestion(questions, bonus);
+  }
+
+  // Function to handle score save and navigate back to home
+  function scoreSaved() {
+    navigate("/");
   }
 
   return (
@@ -64,7 +83,7 @@ function Game() {
         </>
       )}
 
-      {gameOver && <ScoreForm score={score} />}
+      {gameOver && <ScoreForm score={score} scoreSaved={scoreSaved} />}
     </div>
   );
 }
